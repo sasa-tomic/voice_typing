@@ -11,13 +11,15 @@ State-of-the-art, private, offline voice typing/real-time voice translation in L
 - Voice keyboard leverages `ydotool` to type text into any active window.
 - Low memory requirements. Resources may be freed between each spoken interaction.
 
-We invite you to examine `voice_typing` and `voice_client` scripts and see how easy they are to customize for any occasion. They are around 50-75 lines is all. Do not run untrusted code.
+We invite you to examine `voice_typing` and `voice_client` scripts and see how easy they are to customize for any occasion. They are around 50-75 lines is all. Do not run untrusted code. This document was intended for humans. Developers & agents review [AGENTS.md](AGENTS.md) for more concise information about this project.
 
 ## Whisper flow
 
-There is a popular app with a name similar to Whisper flow. It applies edits using an LLM. So instead of typing out what you say, verbatim, it types more or less what you intended to say. We have included a program, called `llama_edit` to mimic that functionality. It is disabled by default. So if you don't need it, skip this section.
+There is a popular app with a name similar to Whisper flow. It applies edits using an LLM. So instead of typing out what you say, verbatim, it types more or less what you intended to say. We have included a program, called `llama_edit` to mimic that functionality. It is disabled by default.
 
-This alpha version of `llama_edit` should work okay with some small, fast models. It is currently set up to use [prism-ml/Bonsai-1.7B](https://huggingface.co/prism-ml/Bonsai-1.7B-gguf) locally, with [llama.cpp](https://github.com/ggml-org/llama.cpp) so try those out first.
+To enable it, we now have added a `-flow` flag (e.g., `./voice_typing -flow`). If you don't need it, skip this section.
+
+The prompt we used in `llama_edit` works only with a few small, fast models. It is currently set up to use [prism-ml/Bonsai-1.7B](https://huggingface.co/prism-ml/Bonsai-1.7B-gguf) locally, with [llama.cpp](https://github.com/ggml-org/llama.cpp) so try those out first, before going hog-wild with other LLMs.
 
 Edit `llama_edit` with the server location and preferred language model. Test it like this:
 
@@ -26,16 +28,9 @@ Edit `llama_edit` with the server location and preferred language model. Test it
 Please tell Josh to bring back the cones from the job site.
 ```
 
-Once you are satisfied that it works, install `llama_edit` somewhere in your path.
+Once you are satisfied that it works, install `llama_edit` where you installed the client.
 
 `cp llama_edit ~/.local/bin`
-
-Then, in whatever client you choose, comment out the existing call to `ydotool`. And uncomment the line to filter the result text thru `llama_edit`, like this.
-
-```shell
-# ydotool type "$extracted_text"
-ydotool type $(llama_edit "$extracted_text")
-```
 
 ## Choosing a Client
 
@@ -181,7 +176,7 @@ Install `Guake` and launch `guake - e voice_client_local` with a hotkey, such as
 
 ## Other terminals
 
-Instead of launching in the tray with `Guake`, the script may be launched with `xterm` e.g. `xterm -e voice_client_local` or any other terminal. It does not actually need a desktop to run. But if it does run on the desktop, we can use `ydotool` to press Alt-Tab. That should return control to whatever desktop app was running before it was launched. Add a line like this.
+Instead of launching in the tray with `Guake`, the script may be launched with `xterm` e.g. `xterm -e voice_client_local` or any other terminal. It does not actually need a desktop to run. But if it does run on the desktop, we can use `ydotool` to press Alt-Tab. That should return control to whatever desktop app was running before it was launched. Add a line like this. Again, this is only useful without `Guake`.
 
 ```shell
 sleep 0.25 && ydotool key 56:0 42:0 56:1 15:1 56:0 15:0

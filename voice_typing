@@ -20,6 +20,12 @@
 # fifo queue to hold temporary audio file names
 audio_fifo=$(mktemp); rm "$audio_fifo" ; mkfifo "$audio_fifo"
 
+# flag parsing
+use_flow=false
+if [[ "$1" == "-flow" ]]; then
+    use_flow=true
+fi
+
 ## create a trap to remove temp files on untimely exit
 cleanup() {
     rm -f /tmp/tmp.txt "$audio_fifo"
@@ -39,8 +45,11 @@ trans(){
         # Thanks for watching! seems to occur frequently due to noise.
         if [[ ${#output} > 15 ]] || [[ "$output" != "Thanks for watching!" ]] \
             && [[ "$output" != *'['* ]]; then
-            ydotool type "$output"
-#            ydotool type $(llama_edit "$output")
+            if [ "$use_flow" = true ]; then
+                ydotool type $(llama_edit "$output")
+            else
+                ydotool type "$output"
+            fi
         fi &
     done < "$audio_fifo"
     #cleanup
